@@ -109,6 +109,7 @@ dist
 
 # Discord Bot Configs
 config.json
+welcome_msg.js
 
 # Database 
 json.sqlite
