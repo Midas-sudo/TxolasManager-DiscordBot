@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
 var db = require('quick.db');
+const fs = require('fs');
 
 const {
 	prefix,
@@ -51,13 +52,13 @@ client.on('message', async message => {
 	client.manager_commands.get('msg_up').execute(message, db);
 		
     if(command === "ready" && (message.member.roles.cache.find((role)=> role.name == "NewMember")) ){
-      client.commands.get('ready').execute(message); //Feito
+      client.manager_commands.get('ready').execute(message); //Feito
 
     } else if (command === "top"){
 		if (args[0] === 'text'){
-			client.commands.get('t_text').execute(message, db);
+			client.manager_commands.get('t_text').execute(message, db);
 		}else if (args[0] === 'voice'){
-			client.commands.get('t_voice').execute(message, db);
+			client.manager_commands.get('t_voice').execute(message, db);
 		}
     } else {
       message.channel.send("That's not a valid command!")
@@ -82,13 +83,7 @@ client.on('guildMemberAdd', async member => {
 
 
 
-client.on('message', async message =>{
-	if (message.content.startsWith("||T_voice")){
-		t_voice(message);
-	}else if(message.content.startsWith("||T_text")){
-		t_text(message);
-	}
-});
+
 
 client.on("voiceStateUpdate", (member_previous_state, member_next_state) => {
 

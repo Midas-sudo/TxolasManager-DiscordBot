@@ -2,6 +2,7 @@ var self = module.exports =  {
     name: 't_text',
     description: 'Function to print the text leaderboard',
     async execute(message, db){
+        const Discord = require('discord.js');
         var db = require('quick.db');
         var data = db.all();
 	
@@ -18,13 +19,11 @@ var self = module.exports =  {
 
         if(player_number >= 15){
             while(a !== 15){
-                var temp = `**${a+1}.** ${data[a].data.nome} **- ${data[a].data.messages}**\n`;
                 content  = content + `**${a+1}.** ${data[a].data.nome} **- ${data[a].data.messages}**\n`;
                 a++;
             }
         }else{
             while(a !== player_number){
-                var temp = `**${a+1}.** ${data[a].data.nome} **- ${data[a].data.messages}**\n`;
                 content  = content + `**${a+1}.** ${data[a].data.nome} **- ${data[a].data.messages}**\n`;
                 a++;
             }
