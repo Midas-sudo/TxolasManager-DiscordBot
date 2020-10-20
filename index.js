@@ -44,12 +44,13 @@ client.once('ready', async () => {
 
 
 client.on('message', async message => {
-    if (message.author.bot || !message.content.startsWith(prefix)) return;
+	client.manager_commands.get('msg_up').execute(message, db);
+	
+	if (message.author.bot || !message.content.startsWith(prefix)) return;
 
     const args = message.content.slice(prefix.length).split(/ +/);
 	const command = args.shift().toLowerCase();
 
-	client.manager_commands.get('msg_up').execute(message, db);
 		
     if(command === "ready" && (message.member.roles.cache.find((role)=> role.name == "NewMember")) ){
       client.manager_commands.get('ready').execute(message); //Feito
