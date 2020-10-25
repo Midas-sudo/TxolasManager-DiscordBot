@@ -10,13 +10,19 @@ const {
 
 const client = new Discord.Client();
 client.manager_commands = new Discord.Collection();
+client.rss_commands = new Discord.Collection();
 const invites = {};
 const wait = require('util').promisify(setTimeout);
 const manager_commands = fs.readdirSync('./manager_commands/').filter(file => file.endsWith('.js'));
+const rss_commands = fs.readdirSync('./rss_commands/').filter(file => file.endsWith('.js'));
 
 for(const file of manager_commands){
   const command = require(`./manager_commands/${file}`);
   client.manager_commands.set(command.name, command);  
+}
+for(const file of rss_commands){
+	const command = require(`./rss_commands/${file}`);
+	client.rss_commands.set(command.name, command);  
 }
 
 
@@ -53,7 +59,7 @@ client.on('message', async message => {
 
 		
     if(command === "ready" && (message.member.roles.cache.find((role)=> role.name == "NewMember")) ){
-      client.manager_commands.get('ready').execute(message); //Feito
+      client.manager_commands.get('ready').execute(message);
 
     } else if (command === "top"){
 		if (args[0] === 'text'){
@@ -61,7 +67,25 @@ client.on('message', async message => {
 		}else if (args[0] === 'voice'){
 			client.manager_commands.get('t_voice').execute(message, db);
 		}
-    } else {
+    } else if(command === "help-rss" || command === "help"){
+	  client.rss_commands.get('help_rss').execute(message);
+  
+	} else if (command === "set_time"){
+	  client.rss_commands.get('set_time').execute(message, args, client);
+  
+	} else if (command === "links"){
+	  client.rss_commands.get('links').execute(message);
+  
+	} else if (command === "remove_links" || command === "remove_link"){
+	  client.rss_commands.get('remove_links').execute(message, args);
+  
+	} else if (command === "add_links" || command === "add_link"){
+	  client.rss_commands.get('add_links').execute(message, args);
+  
+	} else if (command === "update"){
+	  client.rss_commands.get('update_rss').execute(client);
+  
+	} else {
       message.channel.send("That's not a valid command!")
     }
 });
