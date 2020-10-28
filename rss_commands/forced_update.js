@@ -1,7 +1,7 @@
 module.exports =  {
     name: 'forced_update',
     description: 'Function to call the rss_check every x time',
-    async execute(client){
+    async execute(message, client){
       console.log("Update Command");
       message.channel.send("Looking for Updates...")
       client.rss_commands.get('rss_check').execute(client);
