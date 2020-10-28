@@ -38,6 +38,7 @@ client.once('ready', async () => {
 	
 	console.log('Txolas Manager is online!');
 	console.log(client.guilds.cache.get("667012045677264936").createdAt);
+	client.rss_commands.get('update_rss').execute(client);
 
 	client.once('reconnecting', () => {
     	console.log('Reconnecting!');
@@ -83,7 +84,7 @@ client.on('message', async message => {
 	  client.rss_commands.get('add_links').execute(message, args);
   
 	} else if (command === "update"){
-	  client.rss_commands.get('update_rss').execute(client);
+	  client.rss_commands.get('forced_update').execute(message, client);
   
 	} else {
       message.channel.send("That's not a valid command!")
