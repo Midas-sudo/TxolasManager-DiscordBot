@@ -1,3 +1,5 @@
+const { DH_NOT_SUITABLE_GENERATOR } = require("constants");
+
 module.exports = {
   name: "msg_up",
   description: "Function to increase the msg counter of a person.",
@@ -5,6 +7,8 @@ module.exports = {
     if (message.channel == "703243184549003356") return;
     var user_id = message.member.id;
     var username = message.member.user.username;
+    var monthly_rank = new db.table("monthly_rank");
+    var general = new db.table("general");
     if (
       message.content === "$p" ||
       message.content === "$arl" ||
@@ -13,7 +17,9 @@ module.exports = {
     ) {
       return;
     }
-    db.add(`${user_id}.messages`, 1);
-    db.set(`${user_id}.nome`, username);
+    general.add(`${user_id}.messages`, 1);
+    monthly_rank.add(`${user_id}.messages`, 1);
+    general.set(`${user_id}.nome`, username);
+    monthly_rank.set(`${user_id}.nome`, username);
   },
 };

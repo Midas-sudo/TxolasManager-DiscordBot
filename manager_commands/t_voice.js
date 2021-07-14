@@ -3,7 +3,7 @@ var self = (module.exports = {
   description: "Function to print the voice leaderboard",
   async execute(message, db) {
     const Discord = require("discord.js");
-    var db = require("quick.db");
+    require("quick.db");
     var data = db.all();
 
     data.sort(self.Byvoice);
@@ -12,7 +12,7 @@ var self = (module.exports = {
     var a = 0;
     var content = "";
     const embed = new Discord.MessageEmbed()
-      .setTitle("Text Messages Leaderboard")
+      .setTitle("Voice Time Leaderboard")
       .setColor(16753408)
       .setThumbnail("https://i.imgur.com/3m1E8r6.png");
 

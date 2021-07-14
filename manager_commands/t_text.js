@@ -3,7 +3,7 @@ var self = module.exports =  {
     description: 'Function to print the text leaderboard',
     async execute(message, db){
         const Discord = require('discord.js');
-        var db = require('quick.db');
+        require('quick.db');
         var data = db.all();
 	
         data.sort(self.sortBymessage);
