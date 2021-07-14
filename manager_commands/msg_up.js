@@ -13,6 +13,9 @@ module.exports = {
       message.content === "$p" ||
       message.content === "$arl" ||
       message.content === "$wg" ||
+      message.content.startsWith("$") ||
+      user_id === "464723995632074773" || 
+      user_id === "839912860845998130" || 
       message.author.bot
     ) {
       return;

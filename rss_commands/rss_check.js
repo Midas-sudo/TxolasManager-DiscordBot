@@ -6,16 +6,17 @@ module.exports =  {
         const fs = require('fs');
         
         let parser = new Parser();
-        const cursos = fs.readFileSync('cursos.txt', 'UTF-8');
+        var cursos = fs.readFileSync('cursos_txolas.txt', 'UTF-8');
     
         // split the contents by new line
-        const links = cursos.split(/\r?\n/);
-    
-        var a = links.length - 6;
+        var links = cursos.split(/\r?\n/);
+        console.log(links);
+        var a = links.length - 1;
         var b = 0;
         while(b < a){
             var c = 0;
             const link = links[b].split("»");
+	          console.log(link[0]);
             let feed = await parser.parseURL(link[0]);
             //console.log(feed.items);
             console.log(link[1]);
@@ -76,11 +77,15 @@ module.exports =  {
             b++;
         }
     
+	cursos = fs.readFileSync('cursos_caloiros.txt', 'UTF-8');
+	links = cursos.split(/\r?\n/);
+
         var a = links.length - 1;
-        var b = 5;
+        var b = 0;
         while(b < a){
             var c = 0;
             const link = links[b].split("»");
+            console.log(link[0]);
             let feed = await parser.parseURL(link[0]);
             //console.log(feed.items);
             console.log(link[1]);
