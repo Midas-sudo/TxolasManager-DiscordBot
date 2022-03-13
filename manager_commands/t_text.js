@@ -3,7 +3,7 @@ var self = module.exports =  {
     description: 'Function to print the text leaderboard',
     async execute(message, db){
         const Discord = require('discord.js');
-        var db = require('quick.db');
+        require('quick.db');
         var data = db.all();
 	
         data.sort(self.sortBymessage);
@@ -32,7 +32,7 @@ var self = module.exports =  {
         content = content + `A tua posição atual é ${message_user+1}º lugar com ${data[message_user].data.messages} mensagens.`
 
         embed.setDescription(content);
-        message.channel.send(embed).then(sentEmbed => {
+        message.channel.send({embeds:[embed]}).then(sentEmbed => {
             sentEmbed.react("⬅️")
             sentEmbed.react("➡️")
         });
