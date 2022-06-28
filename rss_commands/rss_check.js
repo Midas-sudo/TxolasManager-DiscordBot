@@ -42,22 +42,59 @@ var self = (module.exports = {
           //console.log(item.content);
           var stripedHtml = self.htmlParser(item.content);
           var msg;
-
-          msg = await client.channels.cache.get(entry.roomId).send({
-            content: `<@&${entry.roleId}>`,
-            embeds: [
-              {
-                color: 0xf7c500,
-                title: feed.title,
-                url: item.guid,
-                description: stripedHtml,
-                footer: {
-                  text: entry.acron,
+          var length = stripedHtml.length;
+          if (length < 4000) {
+            msg = await client.channels.cache.get(entry.roomId).send({
+              content: `<@&${entry.roleId}>`,
+              embeds: [
+                {
+                  color: 0xf7c500,
+                  title: feed.title,
+                  url: item.guid,
+                  description: stripedHtml,
+                  footer: {
+                    text: entry.acron,
+                  },
+                  timestamp: item.isoDate,
                 },
-                timestamp: item.isoDate,
-              },
-            ],
-          });
+              ],
+            });
+          } else {
+            const middleIndex = Math.ceil(length / 2);
+            const firstHalf = stripedHtml.slice(0, middleIndex);
+            const secondHalf = stripedHtml.slice(-middleIndex);
+            msg = await client.channels.cache.get(entry.roomId).send({
+              content: `<@&${entry.roleId}>`,
+              embeds: [
+                {
+                  color: 0xf7c500,
+                  title: feed.title,
+                  url: item.guid,
+                  description: firstHalf,
+                  footer: {
+                    text: entry.acron,
+                  },
+                  timestamp: item.isoDate,
+                },
+              ],
+            });
+            msg = await client.channels.cache.get(entry.roomId).send({
+              content: `(continuação)`,
+              embeds: [
+                {
+                  color: 0xf7c500,
+                  title: feed.title,
+                  url: item.guid,
+                  description: secondHalf,
+                  footer: {
+                    text: entry.acron,
+                  },
+                  timestamp: item.isoDate,
+                },
+              ],
+            });
+          }
+          console.log(stripedHtml, "Here");
           entry.records.push(item.isoDate);
           entry.msgRecords.push(msg.id);
           entry.msgBody.push(stripedHtml);
@@ -74,24 +111,67 @@ var self = (module.exports = {
           var second_index = entry.msgBody.indexOf(stripedHtml);
 
           if (second_index === -1) {
-            msg = await client.channels.cache.get(entry.roomId).send({
-              content: `<@&${entry.roleId}> Anúncio Editado!`,
-              embeds: [
-                {
-                  color: 0xffffff,
-                  title: feed.title,
-                  url: item.guid,
-                  description: stripedHtml,
-                  footer: {
-                    text: entry.acron,
+            var length = stripedHtml.length;
+            if (length < 4000) {
+              msg = await client.channels.cache.get(entry.roomId).send({
+                content: `<@&${entry.roleId}> Anúncio Editado!`,
+                embeds: [
+                  {
+                    color: 0xffffff,
+                    title: feed.title,
+                    url: item.guid,
+                    description: stripedHtml,
+                    footer: {
+                      text: entry.acron,
+                    },
+                    timestamp: item.isoDate,
                   },
-                  timestamp: item.isoDate,
+                ],
+                reply: {
+                  messageReference: entry.msgRecords[index],
                 },
-              ],
-              reply: {
-                messageReference: entry.msgRecords[index],
-              },
-            });
+              });
+            } else {
+              const middleIndex = Math.ceil(length / 2);
+              const firstHalf = stripedHtml.slice(0, middleIndex);
+              const secondHalf = stripedHtml.slice(-middleIndex);
+              msg = await client.channels.cache.get(entry.roomId).send({
+                content: `<@&${entry.roleId}> Anúncio Editado!`,
+                embeds: [
+                  {
+                    color: 0xffffff,
+                    title: feed.title,
+                    url: item.guid,
+                    description: firstHalf,
+                    footer: {
+                      text: entry.acron,
+                    },
+                    timestamp: item.isoDate,
+                  },
+                ],
+                reply: {
+                  messageReference: entry.msgRecords[index],
+                },
+              });
+              msg = await client.channels.cache.get(entry.roomId).send({
+                content: `(continuação)`,
+                embeds: [
+                  {
+                    color: 0xffffff,
+                    title: feed.title,
+                    url: item.guid,
+                    description: secondHalf,
+                    footer: {
+                      text: entry.acron,
+                    },
+                    timestamp: item.isoDate,
+                  },
+                ],
+                reply: {
+                  messageReference: entry.msgRecords[index],
+                },
+              });
+            }
             entry.msgBody.push(stripedHtml);
             db.set(`${entry.acron}.msgBody`, entry.msgBody);
           }

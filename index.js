@@ -59,9 +59,9 @@ client.once("ready", async () => {
   client.rss_commands.get("update_rss").execute(client, links);
 
   client.user.setPresence({
-    status: "online",
+    status: "idle",
     activity: {
-      name: "Hard to Get",
+      name: "With Code",
       type: "PLAYING",
     },
   });
