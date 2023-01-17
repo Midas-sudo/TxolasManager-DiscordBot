@@ -5,7 +5,7 @@ module.exports =  {
         const fs = require('fs');
 
         var time = args[0];
-        console.log(args[0] )
+        //console.log(args[0] )
         if (isNaN(time)){
             message.channel.send("Valor introduzido não é um número. Será mantido o valor anterior.")
         }else{

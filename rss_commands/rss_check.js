@@ -94,7 +94,7 @@ var self = (module.exports = {
               ],
             });
           }
-          console.log(stripedHtml, "Here");
+//          console.log(stripedHtml, "Here");
           entry.records.push(item.isoDate);
           entry.msgRecords.push(msg.id);
           entry.msgBody.push(stripedHtml);
