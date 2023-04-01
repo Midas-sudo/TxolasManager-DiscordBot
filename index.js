@@ -52,7 +52,7 @@ client.once("ready", async () => {
   general = new db.table("general");
   links = new db.table("links");
   turnos = new db.table("turnos");
-//setInterval(() => {  turno_check(turnos);  }, 20000);
+  setInterval(() => { turno_check(turnos); }, 20000);
   console.log(turnos.has('846035542880360'))
 
   client.rss_commands.get("arrays_init").execute(client, links);
@@ -219,9 +219,9 @@ client.on("interactionCreate", (interaction) => {
       const index = array.indexOf(user_id);
       if (index > -1) {
         array.splice(index, 1); // 2nd parameter means remove one item only
-        if(!arr.length){
+        if (!arr.length) {
           turnos.delete(`${id}.${turno}`);
-        }else{
+        } else {
           turnos.set(`${id}.${turno}`, array);
         }
         interaction.reply("Alerta removido com sucesso!");
@@ -332,36 +332,17 @@ function turno_check(db) {
 
 function getCourse(id) {
   var list = {
-    846035542880774: "Instalações e Edifícios Inteligentes",
-    846035542880275: "Microeletrónica",
-    846035542880510: "Sistemas Autónomos",
-    846035542880572: "Sistemas de Telecomunicações",
-    846035542880360: "Programação Orientada por Objectos",
-    846035542880501: "Arquitetura e Gestão de Redes",
-    846035542880532: "Sistemas Elétricos",
-    846035542880738: "Redes de Computadores e Internet",
-    846035542880434: "Controlo",
-    846035542880425: "Instrumentação e Medidas",
-    846035542880671: "Probabilidades e Estatísticas",
-    846035542880465: "Eletrotecnia Teórica",
+    564560566182818: "Aprendizagem Autónoma",
+    564560566181912: "Procura e Planeamento",
+
   };
 
   return list[id];
 }
 function getAcron(id) {
   var list = {
-    846035542880774: "IEInt",
-    846035542880275: "Micro",
-    846035542880510: "SAut",
-    846035542880572: "STel",
-    846035542880360: "POO",
-    846035542880501: "AGR",
-    846035542880532: "SElec",
-    846035542880738: "RCI",
-    846035542880434: "Cont",
-    846035542880425: "IM",
-    846035542880671: "PE",
-    846035542880465: "ET",
+    564560566182818: "AAut",
+    564560566181912: "PPla"
   };
 
   return list[id];
