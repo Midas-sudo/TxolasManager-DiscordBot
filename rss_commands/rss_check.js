@@ -17,7 +17,7 @@ var self = (module.exports = {
               {
                 color: 0xf7c500,
                 title: "Fenix in Maintenance",
-                description: "Rss feed parser failed. Check if bot still online",
+                description: "Rss feed parser failed. Check if bot still online" + entry.link,
               },
             ],
           })
